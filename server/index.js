@@ -36,10 +36,19 @@ function safeFallback({ category, location, description }) {
   ].join("\n");
 }
 
+function isConfigured() {
+  const { AI_BASE_URL, AI_API_KEY, AI_MODEL } = process.env;
+  if (!AI_BASE_URL || !AI_API_KEY || !AI_MODEL) return false;
+  if (AI_BASE_URL.includes("YOUR-PROVIDER.example") || AI_API_KEY === "replace_me" || AI_MODEL === "your-open-weight-model-id") {
+    return false;
+  }
+  return true;
+}
+
 app.get("/api/health", (_req, res) => {
   res.json({
     ok: true,
-    aiConfigured: Boolean(process.env.AI_BASE_URL && process.env.AI_API_KEY && process.env.AI_MODEL),
+    aiConfigured: isConfigured(),
     demoFallback: process.env.DEMO_FALLBACK !== "false"
   });
 });
@@ -53,7 +62,7 @@ app.post("/api/report", async (req, res) => {
     return res.status(400).json({ error: "Choose a category and describe what you observed." });
   }
 
-  const configured = process.env.AI_BASE_URL && process.env.AI_API_KEY && process.env.AI_MODEL;
+  const configured = isConfigured();
   if (!configured) {
     if (process.env.DEMO_FALLBACK === "false") {
       return res.status(503).json({ error: "AI is not configured yet. Add provider settings to .env." });

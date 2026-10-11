@@ -51,7 +51,10 @@ function App() {
         try {
           data = JSON.parse(text);
         } catch {
-          throw new Error("The API returned an unexpected response. Check that the backend is running and that VITE_API_URL is configured correctly.");
+          if (!response.ok) {
+            throw new Error(`The backend server is not reachable (HTTP ${response.status}). Make sure the backend is running on port 8787.`);
+          }
+          throw new Error("The API returned an unexpected non-JSON response. Check that the backend is running and that VITE_API_URL is configured correctly.");
         }
       }
 
@@ -60,7 +63,8 @@ function App() {
       setMode(data.mode || "unknown");
       setNotice(data.notice || "");
     } catch (e) {
-      setError(`${e.message} Check that the API server is running.`);
+      const msg = e.message || "An error occurred.";
+      setError(msg.toLowerCase().includes("running") ? msg : `${msg} Check that the API server is running.`);
     } finally { setBusy(false); }
   }
 
