@@ -49,7 +49,7 @@ Set `DEMO_FALLBACK=false` if you want the app to show an error instead of produc
 
 ## Deploy
 
-Deploy the frontend and API to a host that supports both static Vite output and a Node.js server, or deploy them separately and configure the frontend's `/api` requests to target the API host. For a separate frontend/API origin, update the frontend request URL and configure a specific CORS origin in `server/index.js` rather than leaving permissive CORS enabled.
+Deploy the frontend and API to a host that supports both static Vite output and a Node.js server, or deploy them separately. For separate hosts, set `VITE_API_URL` in the frontend build environment to the backend's public origin (for example, `https://api.example.com`, without `/api/report`) and rebuild the frontend. The backend must be deployed and expose `/api/report`; configure a specific CORS origin in `server/index.js` rather than leaving permissive CORS enabled.
 
 For a simple first deployment, use a Node-compatible host with the start command `npm start` and build command `npm run build`. Set the environment variables in the host dashboard; do not upload `.env`.
 

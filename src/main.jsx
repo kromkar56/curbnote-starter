@@ -45,6 +45,11 @@ function App() {
         body: JSON.stringify({ category, location, description })
       });
 
+      if (response.status === 404) {
+        const resolvedUrl = new URL(targetUrl, window.location.origin).href;
+        throw new Error(`API endpoint not found at ${resolvedUrl} (HTTP 404). Set VITE_API_URL to the backend origin and redeploy the frontend.`);
+      }
+
       const text = await response.text();
       let data = {};
       if (text) {
@@ -64,7 +69,7 @@ function App() {
       setNotice(data.notice || "");
     } catch (e) {
       const msg = e.message || "An error occurred.";
-      setError(msg.toLowerCase().includes("running") ? msg : `${msg} Check that the API server is running.`);
+      setError(msg.toLowerCase().includes("running") || msg.includes("API endpoint not found") ? msg : `${msg} Check that the API server is running.`);
     } finally { setBusy(false); }
   }
 
