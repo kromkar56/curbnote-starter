@@ -120,4 +120,8 @@ If the description is ambiguous, preserve that uncertainty. Do not add advice un
   }
 });
 
-app.listen(port, () => console.log(`CurbNote API listening on http://localhost:${port}`));
+export { app };
+
+if (process.env.VERCEL !== "1") {
+  app.listen(port, () => console.log(`CurbNote API listening on http://localhost:${port}`));
+}
