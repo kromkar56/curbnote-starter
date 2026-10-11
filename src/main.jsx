@@ -38,18 +38,21 @@ function App() {
     setBusy(true); setError(""); setNotice(""); setReport(""); setCopied(false);
     try {
       const apiBase = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
-      const response = await fetch(`${apiBase}/api/report` || "/api/report", {
+      const targetUrl = apiBase ? `${apiBase}/api/report` : "/api/report";
+      const response = await fetch(targetUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ category, location, description })
       });
 
       const text = await response.text();
-      let data;
-      try {
-        data = text ? JSON.parse(text) : {};
-      } catch {
-        throw new Error("The API returned an unexpected response. Check that the backend is running and that VITE_API_URL is configured correctly.");
+      let data = {};
+      if (text) {
+        try {
+          data = JSON.parse(text);
+        } catch {
+          throw new Error("The API returned an unexpected response. Check that the backend is running and that VITE_API_URL is configured correctly.");
+        }
       }
 
       if (!response.ok) throw new Error(data.error || "Could not generate the report.");
